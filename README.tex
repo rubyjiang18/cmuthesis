@@ -1,0 +1,476 @@
+
+\documentclass[DIV=calc, paper=letter, fontsize=11pt]{scrartcl}	 % A4 paper and 11pt font size
+
+\usepackage[body={6.5in,9.0in},
+  top=1.0in, left=1.0in]{geometry}
+  
+\usepackage[english]{babel} % English language/hyphenation
+\usepackage[protrusion=true,expansion=true]{microtype} % Better typography
+\usepackage{amsmath,amsfonts,amsthm} % Math packages
+\usepackage[svgnames]{xcolor} % Enabling colors by their 'svgnames'
+\usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption} % Custom captions under/above floats in tables or figures
+\usepackage{booktabs} % Horizontal rules in tables
+\usepackage{fix-cm}	 % Custom font sizes - used for the initial letter in the document
+
+\usepackage{sectsty} % Enables custom section titles
+\allsectionsfont{\usefont{OT1}{phv}{b}{n}} % Change the font of all section commands
+
+\usepackage{fancyhdr} % Needed to define custom headers/footers
+\pagestyle{fancy} % Enables the custom headers/footers
+\usepackage{lastpage} % Used to determine the number of pages in the document (for "Page X of Total")
+%\usepackage[squaren]{mySIunits}
+\usepackage{epsfig}
+
+\usepackage{fancyvrb}% used to include files verbatim
+
+\usepackage{hyperref}
+
+\usepackage[backend=bibtex,style=numeric,sorting=ydnt,maxnames=15]{biblatex}
+\renewbibmacro{in:}{}
+\usepackage{chemsym}
+
+% Count total number of entries in each refsection
+\AtDataInput{%
+  \csnumgdef{entrycount:\therefsection}{%
+    \csuse{entrycount:\therefsection}+1}}
+
+% Print the labelnumber as the total number of entries in the
+% current refsection, minus the actual labelnumber, plus one
+\DeclareFieldFormat{labelnumber}{\mkbibdesc{#1}}    
+\newrobustcmd*{\mkbibdesc}[1]{%
+  \number\numexpr\csuse{entrycount:\therefsection}+1-#1\relax}
+
+% Headers - all currently empty
+\lhead{}
+\chead{}
+\rhead{}
+
+% Footers
+\lfoot{\textsf{CMU-thesis} manual, v1.1, \today}
+\cfoot{}
+\rfoot{\footnotesize Page \thepage\ of \pageref{LastPage}} % "Page 1 of 2"
+
+\renewcommand{\headrulewidth}{0.0pt} % No header rule
+\renewcommand{\footrulewidth}{0.4pt} % Thin footer rule
+
+\usepackage{lettrine} % Package to accentuate the first letter of the text
+\newcommand{\initial}[1]{ % Defines the command and style for the first letter
+\lettrine[lines=3,lhang=0.3,nindent=0em]{
+\color{DarkGoldenrod}
+{\textsf{#1}}}{}}
+
+\usepackage{titling} % Allows custom title configuration
+
+\newcommand{\HorRule}{\color{DarkGoldenrod} \rule{\linewidth}{1pt}} % Defines the gold horizontal rule around the title
+
+\pretitle{\vspace{-1.5in} \begin{center} \HorRule \fontsize{25}{25} \usefont{OT1}{phv}{b}{n} \color{DarkRed} \selectfont} % Horizontal rule before the title
+
+\title{How to use the CMU-thesis \LaTeX\ style} % Your article title
+
+\posttitle{\par\end{center}\vskip 0.5em} % Whitespace under the title
+
+\preauthor{\begin{center}\large \lineskip 0.5em \usefont{OT1}{phv}{b}{sl} \color{DarkRed}} % Author font configuration
+
+\author{\vspace*{-0.7in}} % Your name
+
+\postauthor{\footnotesize \usefont{OT1}{phv}{m}{sl} \color{Black} % Configuration for the institution name
+
+\par\end{center}\HorRule} % Horizontal rule after the title
+\date{CMU-thesis Manual, v1.0, \today}
+
+\newcommand{\la}[2]{\textsf{$\backslash$#1}\{#2\}}
+\newcommand{\lb}[1]{\textsf{$\backslash$#1}}
+\newcommand{\lc}[3]{\textsf{$\backslash$#1}\{#2\}\{#3\}}
+\newcommand{\bv}[1]{\mathbf{#1}}
+\newcommand{\Css}[2]{C^{#1}_{#2}}
+\newcommand{\Cdg}{C$^\circ$}
+\newcommand{\beryl}{\Be$_3$\Al$_2$\Si$_6$\O$_{18}$}
+\newcommand{\TEM}{Transmission Electron Microscopy}
+
+\begin{document}
+\maketitle
+
+\renewcommand{\contentsname}{Table of Contents}
+{\small\tableofcontents}
+
+
+\newpage
+\section{Introduction}
+\LaTeX\ provides the user with a mature professional typesetting system that can be used to 
+produce nice-looking documents while at the same time removing some of the tediousness of dealing
+with citations, renumbering things while moving figures around, and so on.  In this document, we will assume that
+the reader has at least some familiarity with \LaTeX\footnote{There are many good resources and examples available
+on the web and in several books; the most useful reference book would be ``The \LaTeX\ Companion'' (2nd edition) by 
+Frank Mittelbach and Michel Goossens, Addison Wesley, 2004.} so that basic document typesetting is not a big mystery.
+
+Since typesetting requires running the \TeX\ program, we will also assume that a fully functional \LaTeX\ implementation
+is installed on the user's computer.  There are many good implementations available on the web; for  
+Mac OS X, we recommend \TeX Live-2013 along with the \textsf{TeXShop} editor.  For the PC platform, the \textsf{MiKTeX} implementation
+is quite good.  Obviously, other editors will work as well (vim, emacs, etc), since the input files are simple text files.
+Dealing with citations is much easier if you use one of the freely available programs: on the Mac OS X platform, \textsf{BiBDesk}
+is really good, while on the PC you might want to use \textsf{JabRef}.  Note that \textsf{EndNote} can export bibliography
+files for use with \LaTeX, so if you already have an extensive citation database in EndNote, it would be trivial to 
+convert it to the BiBTeX format.
+
+In the following sections, we describe in some detail how to use the CMU-thesis style.  Briefly, you can use this 
+style to produce a complete overview document or a final thesis document, as well as all the announcements sheets.
+
+\section{Obtaining the CMU-thesis package}
+All the files needed to use the CMU-thesis package are maintained on the department's source code
+repository, \textsf{gitorious.materials.cmu.edu}.  Simply look for the \textsf{origin/LaTeX} branch and fetch
+the entire archive or individual files.  Note that this branch is read only; you can fork the branch into your
+own account, using the regular pull command.  The files will be maintained by MDG; any problems, changes, 
+requests for additions, etc., should be addressed to \textsf{degraef@cmu.edu}.
+
+
+\section{The CMU-thesis package}
+The CMU thesis style is defined in a series of files:
+\begin{itemize}
+	\item \textsf{cmu-thesis.cls} is the main class file, and defines all the necessary formatting commands; it is loosely based 
+	on a similar file from the University of Michigan, but has since (2007) been modified extensively for local use.  There is no need
+	to ever edit (or even open) this file, unless you're really curious to know how things work.  
+	\item \textsf{preamble.ins} is a file that is called (inserted) by the main class file and contains a number of user-definable commands; see
+	section~\ref{sec:preamble} for details.
+	\item \textsf{sample-thesis.tex} is an example file that uses the \textsf{cmu-thesis.cls} class file;  details are described in 
+	section~\ref{sec:sample}.
+	\item \textsf{frontmatter.tex} contains all the code for dealing with overview/thesis announcements, title page, abstract, etc.  See section~\ref{sec:frontmatter}.
+	\item \textsf{references.tex} is a file that can be included in the main document; as explained in section~\ref{sec:references}, it provides
+	a path to your BiBTeX bibliography files.
+	\item \textsf{README.tex} is the \LaTeX\ source for this manual;\footnote{Note that this manual is formatted using
+	the \textsf{scrartcl} class which may or may not be installed in your \LaTeX\ distribution.  This class is typically useful for 
+	documents that are formatted on the European A4 paper format; given that the author of this document has his roots in
+	Europe, it shows that old habits die hard $\ldots$.  If you can not typeset this manual on your system, no worries, simply
+	read the pdf file.} the corresponding pdf file is also provided.
+\end{itemize}
+
+
+\subsection{User-definable commands in \textsf{preamble.ins}\label{sec:preamble}}
+The \textsf{preamble.ins} file is used to define a number of commands that are specific
+to your overview or thesis document. They are placed in a separate file to keep the 
+\textsf{main.tex} file uncluttered.  The default preamble file looks as follows:
+\fvset{frame=lines,numbers=left,formatcom=\color{blue},fontsize=\footnotesize}
+\VerbatimInput{preamble.ins}
+Before you start using the \textsf{cmu-thesis} class, you must edit this file and change the
+arguments of the commands on lines 6-20 to appropriate arguments.  The command name 
+should be clear enough for you to know what is needed as argument.
+
+On line 25, an extra file is read in using the \la{input}{} command. This file can be used to 
+store all the user defined commands.  The file is separate from the preamble file so that a new
+version of the preamble will not overwrite the already existing user-defined commands. The
+\textsf{mycommands.ins} file is not part of the \textsf{cmu-thesis} distribution.
+
+In the \textsf{mycommands.ins} file, you can define your own commands for things that you will
+need frequently, such as complex chemical formulae, a long word or word sequence that
+you don't want to retype each time, etc...  Here is how to define a short hand notation
+for the chemical composition of the mineral beryl:
+\begin{verbatim}
+  \newcommand{\beryl}{\Be$_3$\Al$_2$\Si$_6$\O$_{18}$}
+\end{verbatim}
+To use this command in a sentence, you would simply type \lb{beryl}$\backslash$ to obtain \beryl\ in 
+the middle of the sentence. Note that the command is terminated by a backslash; the reason for this 
+backslash is to force the typesetting engine to leave a space between the symbol and 
+the following word.  In other words, without the end backslash we would read \beryl and the next word
+(and) would be right up against the symbol; in case you didn't notice it, on the previous line, there is no space
+between the subscript $_{18}$ and the word ``and.'' 
+
+Here is how to define a shorthand notation for the ``degrees centigrade'' symbol:
+\begin{verbatim}
+  \newcommand{\Cdg}{C$^\circ$}
+\end{verbatim}
+which can be used in a sentence by typing \lb{Cdg}$\backslash$ to get $100$ \Cdg\ or between parenthesis 
+as (\Cdg); in this latter case, there is no need for the ending backslash because the closing parenthesis takes on that role.
+
+New commands can also have one or more arguments, as in the next example:
+\begin{verbatim}
+  \newcommand{\bv}[1]{\mathbf{#1}}	
+\end{verbatim}
+This is a shorthand notation for bold-faced vector symbols, as in \$\la{bv}{q}\$ to get the vector $\bv{q}$, which would
+normally require \$\la{mathbf}{q}\$. Note that the dollar signs
+are not part of the definition of \la{bv}{}, so that the same command can also be called from inside displayed equations.
+If more than one argument is needed, the same command declaration format can be used:
+\begin{verbatim}
+  \newcommand{\Css}[2]{C^{#1}_{#2}}	
+\end{verbatim}
+This command contains math symbols for subscript and superscript, so it must be used inside a math environment;
+typing 
+\begin{verbatim}
+  \begin{equation}
+     \Css{\alpha}{\beta} = \sum_{k=1}^{3}\Css{\alpha}{k}\Css{k}{\beta}.\nonumber
+   \end{equation}
+\end{verbatim}
+yields:
+\begin{equation}
+     \Css{\alpha}{\beta} = \sum_{k=1}^{3}\Css{\alpha}{k}\Css{k}{\beta}.\nonumber
+\end{equation}
+There are many other commands that the user might want to define; for instance, instead of having to type Transmission Electron Microscopy each time,
+we can simply use the command \lb{TEM}, defined as:
+\begin{verbatim}
+	\newcommand{\TEM}{Transmission Electron Microscopy}
+\end{verbatim}
+and use it as \lb{TEM}$\backslash$ to obtain \TEM\ in a sentence.  
+
+
+\subsection{Other things defined in \textsf{preamble.ins}\label{sec:figures}}
+The remaining entries in the \textsf{preamble.ins} file deal with a variety of pre-defined commands that should not
+be modified by the user (although you can always define modifications of these commands by using a different command name).
+
+Lines 33-51 define a number of true-false toggles that allow you to generate certain items in the final output.  Each toggle is 
+defined here, and set to false by default.  You can use the \la{toggletrue}{} switches in the main source file to turn individual 
+items on.
+
+Lines 58-68 define the layout of the page headers and footers; this uses the \textsf{fancyheadings} package, which should be part 
+of a complete \LaTeX\ installation.  This is where the \la{shortthesistitle}{} and \la{shortauthor}{} commands are used.
+
+Lines 75-134 define a particular way to deal with figure and table labels, and provide a shorthand notation to insert 
+a figure into a document.  There are two sets of command definitions; the value of the \textsf{oldpreamble} toggle determines
+which block will be active.\footnote{If you used a version of the \textsf{cmu-thesis.cls} package prior to May 19, 2014, then 
+you may have used commands that are no longer supported in the new version of the \textsf{preamble.ins} file. This does not
+mean that you need to rework all your source files.  You can simply set the \textsf{oldpreamble} toggle to true in the main
+source file to continue to use the older commands.  If you are new to this package, we suggest that you set \textsf{oldpreamble}
+to false (the default value).}
+ 
+Lines 112-113 define shorthand commands to cite figures and tables.  If figure 15 has label \textsf{microstructure1}, then you 
+can refer to this figure by typing \la{figref}{microstructure1} which produces Fig.~15 in the text.  
+
+If you decide to use the \textsf{epsfig} package for figures,\footnote{You could also use the \textsf{includegraphics} package.}
+then the two commands defined on lines 116 and 126 provide convenient ways to do so.  Let's assume that you have a figure
+that was created in Adobe Illustrator, and named \textsf{micro1.eps}; the figure is located in the folder set by the \la{graphicspath}{}
+command in the main file (see next section).  You can include this figure in your text by using the command:
+\begin{verbatim}
+	\insertfigure{micro1}{This is the figure caption}
+\end{verbatim}
+The \lc{insertfigure}{}{} command will use the first argument both as the file name, and as the figure label; you can then use \la{figref}{micro1} to
+refer to the figure.  The second command, \lb{insertfigurew}, has an extra argument that allows you to specify the width of the figure:
+\begin{verbatim}
+	\insertfigurew{micro1}{This is the figure caption}{4.5in}
+\end{verbatim}
+which will force the width of the figure to be $4.5$ inches, regardless of the size specified in the eps file.
+
+This is just one way to deal with figures.  As you gain more confidence with \LaTeX\ typesetting, you can try to define
+new commands that deal with your specific needs, e.g., putting two figures next to each other, putting a figure in the 
+margin, etc.  There are also many examples on the web, so you won't have to reinvent the wheel for anything that you
+will likely need for your thesis document.
+
+
+
+
+
+\subsection{Sample master file\label{sec:sample}}
+Before we discuss the layout of a typical thesis document, we should explain the difference between the \LaTeX\ \la{input}{}
+and \la{include}{} commands.  When you typeset a document, starting from a given .tex file, the \TeX\ program will generate
+a series of additional files.  Among those files there is a file with the same name as the source file, and extension .aux (auxiliary).
+This is a text file that contains information about citations, figures, tables, section labels, index entries, and so on; the .aux file is how \LaTeX\
+keeps track of the overall structure of your document.  When you run the program a second time, the first thing that will happen (after loading
+packages) is that the .aux file is read.  If your source consists of multiple files (for instance, a \textsf{main.tex} file and several \textsf{chapter\#.tex}
+files), then you can typeset only a portion of the entire document (we'll show below how to do this), but you want the program to still
+``know'' all the labels and such from the other portions; this is done by reading all the .aux files.
+
+The difference between \la{input}{} and \la{include}{} is easy to understand:
+\begin{itemize}
+	\item \la{input}{name.ext} inserts a text file \textsf{name.ext} at the current position in the document.  This could be useful
+	to define special commands that are all collected in a single file.  In the current case, this is how the \textsf{preamble.ins}
+	file is read.   
+	\item \la{include}{name.tex} expects a \LaTeX\ source file as its argument.  This command will also force the 
+	typesetting engine to read the corresponding \textsf{name.aux} file, if it exists.  The \la{includeonly}{} command can
+	be used to control which files will actually be included in the document.  As an example, let us assume that there is a 
+	\textsf{main.tex} source as well as three chapter files, \textsf{chapter01.tex}, \textsf{chapter02.tex}, and \textsf{chapter03.tex}.
+	In the main.tex file, you will want to have three \la{include}{} commands as follows:
+	\begin{verbatim}
+		\include{chapter01}
+		\include{chapter02}
+		\include{chapter03}
+	\end{verbatim}
+	Note that the extension .tex is not needed.  If the source is then typeset, all three chapter files and their corresponding .aux files
+	will be read and typeset.  If you want to typeset only \textsf{chapter02.tex}, then you must tell the typesetting engine to 
+	\la{includeonly}{chapter02}; note that this command must be located in the document preamble, i.e., before the \la{begin}{document}
+	command.  In that case, only chapter 2 will be typeset in your output file (typically a PDF file), but the .aux files from the other two
+	chapters will still be read.  This allows you to refer to a figure or equation in another chapter (one that was typeset at some earlier
+	time, so that its .aux file exists) without actually needing to have that chapter in your output.
+\end{itemize}
+
+Next, let's take a look at the \textsf{sample-thesis.tex} file.  Here is an abbreviated version of this file:
+\fvset{frame=lines,numbers=left,formatcom=\color{blue},fontsize=\footnotesize}
+\VerbatimInput{short-thesis.tex}
+Note that comments in \LaTeX\ source files start with the percent character \%; it improves the readability of a 
+source file if you intersperse meaningful comments throughout the file.
+
+Line 1 in the document loads the document class file \textsf{cmu-thesis}; this line must be the first one in your file, apart 
+from comment lines.  This is followed by the loading of \textsf{package} files; packages are collections of predefined 
+\LaTeX\ commands that accomplish a particular typesetting goal.  Line 5 loads a package that replaces the default font (Computer Modern)
+by Helvetica, line 6 loads a package that contains commands for using Encapsulated Postscript files, and so on.
+The \textsf{sample-thesis.tex} file loads many more packages.  You can browse the \textsf{ctan.org} web site
+to get an idea of all available packages, along with manuals for all the commands in each package.
+
+Line 15 loads a package called \textsf{showkeys}, which, when loaded, will print all labels and citations in the margins
+of the document; this is useful when editing a lengthy document, to make sure that correct labels and references are
+used, but it should be turned off in the final version of the document by commenting out this line.
+
+Line 18 loads the \textsf{hyperref} package, which is used to make the entries in the Table of Contents clickable links inside
+the final PDF output file.  In addition, citations and references to equations and sections are also turned into hyperlinks.
+Lines 21-28 define the appearance of such links; the user can set the color of links, anchors, urls and so on.  As with
+most packages, there are many additional settings and commands; the user should consult the manual pages for this
+and other packages to learn how to use them.
+
+Line 31 declares the path for figure files; as discussed in section~\ref{sec:tips}, it is a good idea to keep all your figures
+separate from the \LaTeX\ source files, and this command tells the typesetting engine where the figures can be found.
+
+On line 41, you can uncomment the \la{toggletrue}{oldpreamble} command to use the older version of the preamble file;
+this is only provided for backwards compatibility for those students who have already created an overview or thesis document,
+but wish to use the new preamble file.  
+
+In line 45, the engine is told to load the \textsf{preamble.ins} file, which was discussed in detail in section~\ref{sec:preamble}.
+
+In lines 48-56, you can uncomment any line to include the corresponding item in your output file; so, if you want a title page,
+then simply uncomment the line that says \%\la{toggletrue}{titlepage}.
+
+Line 59 declares which source files should be typeset in the output file; in this example, five source files will be included.
+To include all source files (which you would need to do for the final typesetting run of your thesis document) you can simply
+comment out this line.
+
+The actual document begins at line 62; everything preceding line 62 is known as the \textit{preamble}.  Every \la{begin}{} statement
+must have a corresponding \la{end}{} statement, which is found on the last line of the file.  The contents of the document are 
+subdivided into three regions: 
+\begin{itemize}
+	\item \textit{front matter}: this includes the title page, dedication page, preface, table of contents, list of figures, list of tables, list of
+	symbols, etc.  Typically, the page numbering of this section uses roman numerals, as defined in line 65.
+	\item \textit{main matter}: the main portion of the document consists of multiple chapters, and uses arabic numerals for page numbers.
+	The actual page number must be reset to 1 (line 71) before including any chapter files.
+	\item \textit{back matter}: this includes the appendices, if any, citations, and index (if one is required; typically, for a thesis
+	document, there is no need for an index).  The \la{appendix}{} command must be issued 
+	before including any appendix files, to make sure that equation numbers and such are properly formatted (i.e., A-1 instead of 1).
+\end{itemize}
+The example file shows how to deal with a large document that consists of many sections.  It is good practice to keep each chapter
+in its own source file, and to list all chapters, in the correct order, as \la{include}{} commands in the document section of the \textsf{main.tex} file.
+Once everything is properly set up, then you will only need to modify the argument of the \la{includeonly}{} command to typeset individual 
+sections (chapters) of your document.  You can have many versions of this command commented out, with only the one you currently 
+need uncommented, as in this example:
+	\begin{verbatim}
+		%\includeonly{chapter01}
+		%\includeonly{chapter02}
+		\includeonly{chapter01,chapter03}
+		%\includeonly{chapter03}
+	\end{verbatim}
+In this example, both chapters 1 and 3 will be typeset, and the .aux file of chapter 2 will be read (provided there is an \la{include}{chapter02}
+command in the main document section).
+
+
+\subsection{How to deal with citations\label{sec:references}}
+The file \textsf{references.tex} is needed to define where your bibtex file(s) is/are located.  Open the file with
+your favorite editor, and modify the last line of the file (no need to change anything else in this file).  
+The repository file will have the entry
+\begin{verbatim}
+	\bibliography{bibfile}
+\end{verbatim}
+which indicates that there is a file called \textsf{bibfile.bib} in the current folder.  It is probably a good 
+idea to create a separate folder to keep your bibliography files.  Assuming that you have a folder called
+\textsf{citations} in your main folder, and you have two bibtex files called \textsf{bib1.bib} and \textsf{bib2.bib},
+then you should modify the above line to:
+\begin{verbatim}
+	\bibliography{citations/bib1,citations/bib2}
+\end{verbatim}
+Obviously, you can specify a full path name, so that your bibtex files can be located anywhere on your drive.
+
+There is no real need to ever directly edit a bibtex file by hand, since the bibliography programs (e.g., \textsf{BiBDesk})
+will take care of all the formatting details.  Just a few comments that will help you avoid common pitfalls:
+\begin{enumerate}
+	\item \textit{citation labels}: each citation needs to be given a label, that can be used to insert the citation
+	in the text using the \textsf{$\backslash$cite$\{\}$} command.  Obviously, citation labels need to be unique.  It is good practice to make the label something that 
+	you can easily generate and recognize. While there are a few different ways of doing this, the following method is quite easy
+	to apply consistently:  take the last name of the first author, put it in lower case, add the year of publication, and follow
+	this by a lowercase letter ``a'', ``b'' etc., to allow for the fact that an author may have more than one paper
+	in a given year. so, for the following citation:
+	\begin{verbatim}
+	C. Phatak, M. Pan, A.K. Petford-Long, S. Hong and M. De Graef, 
+	"Magnetic interactions and reversal of artificial square spin ices," 
+	New Journal of Physics, vol. 14, 075028 (2012)
+	\end{verbatim}
+	you would construct the label as ``phatak2012a'' and use \la{cite}{phatak2012a} in the text.
+	
+	\item \textit{entering author names}: it is good practice to always enter author names in the same way, to avoid potential 
+	issues with the formatting of initials and such.  Experience shows that the following approach causes a minimum of problems.
+	Consider the citation above; the list of authors should be entered in \textsf{BiBDesk} (or equivalent) as follows:
+	\begin{verbatim}
+		\author = {Phatak, C. and Pan, M. and Petford-Long, A.K. and Hong, S. and De Graef, M.}
+	\end{verbatim}
+	Note the use of a comma after each last name, but not after the initials; also note the use of \textit{and} after each author.
+	Doing things this way will inform the bibtex program, among other things, that \textit{De} and \textit{Graef} need to be kept 
+	together.\footnote{I have, over the years, received regular mail addressed to \textit{Prof.\ De}; surprisingly, the CMU post
+	office has always managed to get those letters to the right location.}  Other ways of entering author names may also work, but 
+	the method above should not cause any issues.	
+	
+	\item \textit{how to use capital letters in article/book titles}: the bibtex typesetting program has the annoying habit 
+	of automatically lowercasing all uppercase letters in the title of a book or article, except for the first capital.  So, if 
+	the title were 
+	\begin{verbatim}
+		Applications of EBSD to Ni and Al
+	\end{verbatim}
+	it would be typeset as \textit{Applications of ebsd to ni and al}.  To avoid this, it is necessary to enclose the capital 
+	letters between curly braces, as in 
+	\begin{verbatim}
+		Applications of {EBSD} to {N}i and {A}l
+	\end{verbatim}
+\end{enumerate}
+
+\section{The front matter\label{sec:frontmatter}}
+The front matter section contains a series of items that can be turned on or off (default off) by using the toggle switches in
+the main source file.  A typical \textsf{frontmatter.tex} file is provided and reads as follows:
+\fvset{frame=lines,numbers=left,formatcom=\color{blue},fontsize=\footnotesize}
+\VerbatimInput{frontmatter.tex}
+Note that there is one place in the frontmatter file where you will need to change two entries!  Look for the word ``CHANGE''
+to find that location.\footnote{Due to some intricacies of \LaTeX, it appears to be difficult to pass the author and date variables from 
+the preamble file to the frontmatter file, so for now we'll have to do this manually.}  Then enter your full name and the date at
+the appropriate locations and save the file.  Make sure to leave the empty lines between the three commands!
+
+By default, none of the entries in your frontmatter file will appear in the output; you must explicitly turn on those items that you 
+wish to typeset.  
+\begin{itemize}
+	\item \textit{Overview Announcement}: this option produces a properly formatted announcement page for your overview.
+	\item \textit{Defense Announcement}:  this option produces a properly formatted announcement page for your defense.
+	\item \textit{Title Page}: produces a properly formatted title page for your overview/thesis document.
+	\item \textit{Dedication}: add a separate dedication page after the title page.
+	\item \textit{Abstract}: an abstract will appear after the dedication page and can be of arbitrary length.
+	\item \textit{Acknowledgements}: this is where you thank everyone for whatever help or support they provided; can be of arbitrary length.
+	\item \textit{Publication List}: here is where you list all of the publications that were produced during your research period.
+	\item \textit{Table of Contents}: includes a hyperlinked Table of Contents in the document.
+	\item \textit{List of Figures and Tables}: include separate lists of Figures and Tables.
+	\item \textit{List of Symbols}: add your own list of symbols.
+\end{itemize}
+
+\section{Useful tips\label{sec:tips}}
+Here are a few potentially useful tips as you start preparing your overview/thesis document:
+\begin{enumerate}
+	\item Create a folder called \textsf{Thesis} (or \textsf{Overview}) somewhere on your hard drive, and in it, a sub-folder called
+	\textsf{figures}.  This will allow you to keep figures and \LaTeX\ source separate and clearly organized.  Place all the 
+	class files and this README.pdf file inside this top folder, so that you can easily locate it later.
+	\item Make sure that all new commands are collected in the \textsf{mycommands.ins} file, so that they are easily maintained.  Create this 
+	file first, before you do anything else.
+	\item Use a simple name for your master source file, such as \textsf{main.tex} or \textsf{overview.tex}/\textsf{thesis.tex}.  This is the
+	only file that you need to typeset, since it inputs/includes all other required files.	  To get started, copy the contents of the \textsf{sample-thesis.tex}
+	file into your new master file, so that it does not get overwritten with a new release in the future.
+	\item Avoid using figure file names of the type \textsf{Chap5Fig3.eps}; this will only cause problems if you later decide to
+	insert a new figure between figures 2 and 3 in chapter 5, or you decide to move this figure to a different chapter.  
+	The same goes for chapter source files.  If you are $100\%$ certain
+	that the order of your chapters will not ever need to be changed,\footnote{Even if you think that the 
+	order of your chapters is correct, don't underestimate the ability of your pesky advisor to decide two weeks before your defense
+	that you should change the order.} then you can use filenames of the type \textsf{chapter01.tex},
+	\textsf{chapter02.tex}, etc.  It is generally easier to give each chapter file a meaningful name, e.g., \textsf{introduction.tex},
+	\textsf{literature.tex}, \textsf{results.tex}; changing the order of chapters in your thesis then simply requires changing the 
+	order of the corresponding \la{include}{} commands in the main source file.  Everything else will be automatically renumbered 
+	by the typesetting engine.
+	\item Avoid using the underscore symbol and spaces in file names; some \LaTeX\ commands may not function properly when you have an
+	underscore or a space in a file name.
+	\item Make sure you have at least one back-up of all your files.  Better yet, if you know how to use a source code repository, use it to 
+	store your \LaTeX\ source code files, so that you can always return to earlier versions.  You could consider your overview document
+	to be the first release of your project, and the thesis document the second release.  It is not advisable to store binary files in the 
+	repository, so you should put the figures folder in your \textsf{.gitignore} file (or equivalent, if you are using a different type of repository).
+	\item To resolve all references, labels, and citations, you need to run the typesetting engine three times for the final production run of 
+	your document: the first time, all .aux files are properly created; then you run the bibtex program to generate the bibliography files; then you 
+	run the typesetting engine two more times to make sure that all references are resolved.  If you are using the \textsf{TeXShop} program, then
+	you can simply typeset using the \textit{pdflatexmk} engine, which does all this automatically.
+\end{enumerate}
+
+
+
+
+
+\end{document}
